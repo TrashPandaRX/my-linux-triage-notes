@@ -1,0 +1,26 @@
+If you have having issues with getting the wireless on a freshly installed ubuntu (in my case 24.04.3 LTS) up and running on an early 2015 11' macbook air, this was the process I eventually worked out to get the kernel to recognize and play nice with my broadcom wireless card.
+
+So because I performed a clean wipe of the macOS in favor of this ubuntu distro I was floundering for a long while due to various reddit, SO, and chatGPT sources feeding me small bits and pieces of what ended up actually fixing my setup.
+
+After freshly installing Ubuntu without the use of wireless internet as the kernel wasn't detecting my wireless card even when setting things up (via `ip link show`), I realized that I was going to need some type of internet connection to resolve my issue so I ended up using my iphone's usb tether to channel the hotspot it was producing directly into my laptop. You can alternatively use a usb-ethernet adapter and plug your ethernet cable into that for the following steps. Again this is a fix for the 2015 macbook air, as it only had the charging port, 2 usb-a ports, a 3.5 mm jack, and thunderbolt port.
+
+The main process I took was verifying what kernel I was using, downloading an earlier version that was confirmed to work with the broadcom hardware in the laptop, rebooting into GRUB and selecting the earlier version of the kernel, then installing the appropriate drivers and software to make use of the wireless card, booting them up and finally I was able to connect to the internet wirelessly.
+
+(these commands respectively will let you know what kernel you are running on and let you know what wireless hardware your kernel can interface with at the moment.)
+`uname -r`
+`ip link show`
+
+`sudo apt install linux-image-6.8.0-45-generic linux-headers-6.8.0-45-generic`
+
+`sudo reboot`
+
+(hold shift or esc during the startup to gain access to the GRUB menu, or you can make GRUB always appear on startup via...)
+Select the Advanced Options menu at GRUB, and startup the kernel version you just downloaded (eg 6.8.0-45-generic)
+
+Once you've logged in successfully, ensure you are on the correct kernel via `uname -r`
+
+From there you can run `sudo apt install bcmwl-kernel-source`
+
+Run `ip link show` again to see if the wireless card has finally been bound to the kernel (aka OS) successfully. And look for an interface that starts with "wl" and should mention the wireless card after the colon like "<BROADCAST,MULTICAST,UP,LOWER_UP>"
+
+And that should do it!
